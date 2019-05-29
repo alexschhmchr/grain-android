@@ -8,6 +8,8 @@ import androidx.core.content.ContextCompat;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.TextView;
 
@@ -26,8 +28,18 @@ public class MainActivity extends AppCompatActivity {
     private RangeSeekBar seekBar1;
     private RangeSeekBar seekBar2;
     private RangeSeekBar seekBar3;
+    private TextView objsTextView;
     private HSVDetector hsvDetector;
-    private boolean detecting = false;
+    private boolean threshold = false;
+    private boolean detect = false;
+    private boolean blocking = false;
+    private Handler handler = Handler.createAsync(Looper.getMainLooper());
+
+    private enum ObjectDetector {
+        HSV, HOG
+    }
+
+    private ObjectDetector currentDetector = ObjectDetector.HSV;
 
     float lowerB1 = 0;
     float higherB1 = 255;
@@ -40,14 +52,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        MaterialButton button = findViewById(R.id.button);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                detecting = true;
-            }
-        });
-        hsvDetector = new HSVDetector();
+        MaterialButton rangeButton = findViewById(R.id.rangeButton);
+        rangeButton.setOnClickListener(v -> threshold = !threshold);
+        MaterialButton detectButton = findViewById(R.id.detectButton);
+        detectButton.setOnClickListener(v -> detect = !detect);
+        objsTextView = findViewById(R.id.objsTextView);
         seekBar1 = findViewById(R.id.seekBar);
         seekBar2 = findViewById(R.id.seekBar2);
         seekBar3 = findViewById(R.id.seekBar3);
@@ -116,6 +125,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
 
         }
+        hsvDetector = new HSVDetector();
         initCamera();
     }
 
@@ -132,19 +142,34 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
                 Mat frame = inputFrame.rgba();
-                if(detecting) {
+
+                if(!blocking && detect) {
+                    blocking = true;
                     detectGrain(frame);
+                    blocking = false;
+                }
+                if(!threshold) {
+                    Imgproc.cvtColor(frame, frame, Imgproc.COLOR_BGR2RGB);
                 }
                 return frame;
             }
         });
         cView.setCameraIndex(CameraBridgeViewBase.CAMERA_ID_BACK);
         cView.enableView();
-        cView.setMaxFrameSize(1920, 1080);cView.setMaxFrameSize(1920, 1080);
+        cView.setMaxFrameSize(1280, 720);
     }
 
     private void detectGrain(Mat frame) {
-        hsvDetector.detectColor(frame);
+        int objects;
+        switch(currentDetector) {
+            case HSV:
+                objects = hsvDetector.detectObject(frame, detect);
+                break;
+            case HOG:
+                //objects =
+                break;
+        }
+        handler.post(() -> objsTextView.setText(Integer.toString(objects)));
     }
 
     @Override

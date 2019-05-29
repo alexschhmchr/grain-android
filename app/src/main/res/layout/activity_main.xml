@@ -58,15 +58,25 @@
         app:rsb_thumb_size="20dp" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/button"
+        android:id="@+id/rangeButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-        android:text="Button"
+        android:text="Threshold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/detectButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Detect"
+        app:layout_constraintStart_toEndOf="@+id/rangeButton"
+        app:layout_constraintTop_toTopOf="@+id/rangeButton" />
 
     <TextView
         android:id="@+id/lb1TextView"
@@ -155,5 +165,26 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/seekBar3"
         app:layout_constraintTop_toTopOf="@+id/seekBar3" />
+
+    <TextView
+        android:id="@+id/objTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:text="Objects in frame:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/objsTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="0"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toBottomOf="@+id/objTextView"
+        app:layout_constraintStart_toEndOf="@+id/objTextView"
+        app:layout_constraintTop_toTopOf="@+id/objTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
