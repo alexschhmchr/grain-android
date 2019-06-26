@@ -11,6 +11,8 @@ import org.opencv.imgproc.Imgproc;
 import java.util.ArrayList;
 
 public class HSVDetector {
+    private static final int MAX_POINTS = 7000;
+
     private boolean showInRangePoints = false;
     private Scalar lowerBound = new Scalar(0, 0, 0);
     private Scalar upperBound = new Scalar(255, 255, 255);
@@ -75,16 +77,21 @@ public class HSVDetector {
 
     public int detectObject(Mat img, boolean showThreshImg) {
         ArrayList<Point> inRangePointList = getInRangePoints(img, showThreshImg);
-        ArrayList<DBScan.Cluster> clusters = dbScanner.findClustersNR(inRangePointList);
-        for(DBScan.Cluster cluster : clusters) {
-            Rect rect = cluster.getClusterRect();
-            rect.width *= 2;
-            rect.height *= 2;
-            rect.x *= 2;
-            rect.y *= 2;
-            Imgproc.rectangle(img, cluster.getClusterRect(), new Scalar(255), 2);
+        if(inRangePointList.size() < MAX_POINTS) {
+            ArrayList<DBScan.Cluster> clusters = dbScanner.findClustersNR(inRangePointList);
+            for(DBScan.Cluster cluster : clusters) {
+                Rect rect = cluster.getClusterRect();
+                rect.width *= 2;
+                rect.height *= 2;
+                rect.x *= 2;
+                rect.y *= 2;
+                Imgproc.rectangle(img, cluster.getClusterRect(), new Scalar(255), 2);
+            }
+            return clusters.size();
+        } else {
+            return -1;
         }
-        return clusters.size();
+
     }
 
 }

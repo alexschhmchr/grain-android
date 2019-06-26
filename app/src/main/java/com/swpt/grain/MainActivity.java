@@ -30,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private RangeSeekBar seekBar3;
     private TextView objsTextView;
     private HSVDetector hsvDetector;
+    private HOGDetector hogDetector;
     private boolean threshold = false;
     private boolean detect = false;
     private boolean blocking = false;
@@ -126,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
 
         }
         hsvDetector = new HSVDetector();
+
+        hogDetector = new HOGDetector(0.7, getResources().getAssets());
         initCamera();
     }
 
@@ -160,16 +163,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void detectGrain(Mat frame) {
-        int objects;
+        int objects = 0;
         switch(currentDetector) {
             case HSV:
                 objects = hsvDetector.detectObject(frame, detect);
                 break;
             case HOG:
-                //objects =
+                objects = hogDetector.detectObject(frame);
                 break;
         }
-        handler.post(() -> objsTextView.setText(Integer.toString(objects)));
+        int n = objects;
+        handler.post(() -> objsTextView.setText(Integer.toString(n)));
     }
 
     @Override
