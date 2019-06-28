@@ -6,6 +6,7 @@ import org.opencv.core.Mat;
 import org.opencv.core.MatOfDouble;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.MatOfRect;
+import org.opencv.core.Point;
 import org.opencv.core.Rect;
 import org.opencv.core.Scalar;
 import org.opencv.imgproc.Imgproc;
@@ -14,38 +15,46 @@ import org.opencv.objdetect.HOGDescriptor;
 import java.io.IOException;
 
 public class HOGDetector {
-    private static final int HIT_THRESHOLD = 0;
+    private static final double HIT_THRESHOLD = 2.5;
 
+    private Mat gray = new Mat();
     private HOGDescriptor hog;
     private MatOfRect rects = new MatOfRect();
+    private MatOfPoint points = new MatOfPoint();
     private MatOfDouble weights = new MatOfDouble();
     private double weightTreshold;
 
-    public HOGDetector(double weightThreshold, AssetManager assetManager) {
+    public HOGDetector(double weightThreshold, String filesPath) {
         hog = new HOGDescriptor();
-        String fileName = "file:///android_asset/hog.yml";
-        try {
-            String[] files = assetManager.list("");
-            for (String file :
-                    files) {
-                System.out.println(file);
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        boolean loaded = hog.load(fileName);
+        System.out.println(filesPath);
+        boolean loaded = hog.load(filesPath + "/hog.yml");
         System.out.println("loaded: " + loaded);
         this.weightTreshold = weightThreshold;
     }
 
+    public void setWeightTreshold(double weightTreshold) {
+        this.weightTreshold = weightTreshold;
+    }
+
     public int detectObject(Mat img) {
-        hog.detectMultiScale(img, rects, weights, HIT_THRESHOLD);
-        Rect[] rectArray = rects.toArray();
-        double[] weightArray = weights.toArray();
-        for(int i = 0; i < rectArray.length; i++) {
-            Imgproc.rectangle(img, rectArray[i], new Scalar(255, 0, 0), 2);
+        System.out.println(img.size());
+        Imgproc.cvtColor(img, gray, Imgproc.COLOR_BGR2GRAY);
+        hog.detect(gray, points, weights, weightTreshold);
+        //hog.detectMultiScale(gray, rects, weights, HIT_THRESHOLD);
+        //Rect[] rectArray = rects.toArray();
+        Point[] pointArray = points.toArray();
+        double[] weightArray = null;
+        if(pointArray.length > 0) {
+            weightArray = weights.toArray();
         }
-        return rectArray.length;
+        System.out.println(pointArray.length);
+        for(int i = 0; i < pointArray.length; i++) {
+            System.out.println("weight: " + weightArray[i]);
+            Point p2 = pointArray[i].clone();
+            p2.x += 440;
+            p2.y += 440;
+            Imgproc.rectangle(img, pointArray[i], p2, new Scalar(255, 0, 0), 2);
+        }
+        return pointArray.length;
     }
 }

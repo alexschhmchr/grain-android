@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.view.View;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.google.android.material.button.MaterialButton;
@@ -23,11 +24,15 @@ import org.opencv.android.OpenCVLoader;
 import org.opencv.core.Mat;
 import org.opencv.imgproc.Imgproc;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+
 public class MainActivity extends AppCompatActivity {
     private final static int CAMERA_REQUEST_CODE = 0;
     private RangeSeekBar seekBar1;
     private RangeSeekBar seekBar2;
     private RangeSeekBar seekBar3;
+    private SeekBar weightSeekBar;
     private TextView objsTextView;
     private HSVDetector hsvDetector;
     private HOGDetector hogDetector;
@@ -40,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         HSV, HOG
     }
 
-    private ObjectDetector currentDetector = ObjectDetector.HSV;
+    private ObjectDetector currentDetector = ObjectDetector.HOG;
 
     float lowerB1 = 0;
     float higherB1 = 255;
@@ -61,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         seekBar1 = findViewById(R.id.seekBar);
         seekBar2 = findViewById(R.id.seekBar2);
         seekBar3 = findViewById(R.id.seekBar3);
+        weightSeekBar = findViewById(R.id.weightSeekBar);
         seekBar1.setValue(lowerB1, higherB1);
         seekBar2.setValue(lowerB2, higherB2);
         seekBar3.setValue(lowerB3, higherB3);
@@ -70,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
         TextView ub1TextView = findViewById(R.id.ub1TextView);
         TextView ub2TextView = findViewById(R.id.ub2TextView);
         TextView ub3TextView = findViewById(R.id.ub3TextView);
+        TextView weightTextView = findViewById(R.id.weightTextView);
         seekBar1.setOnRangeChangedListener(new OnRangeChangedListener() {
             @Override
             public void onRangeChanged(RangeSeekBar view, float leftValue, float rightValue, boolean isFromUser) {
@@ -118,7 +125,24 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(RangeSeekBar view, boolean isLeft) { }
         });
+        weightSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                float progressF = progress/10f;
+                hogDetector.setWeightTreshold(progressF);
+                weightTextView.setText(Float.toString(progressF));
+            }
 
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         OpenCVLoader.initDebug();
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             String[] perms = {Manifest.permission.CAMERA};
@@ -127,9 +151,23 @@ public class MainActivity extends AppCompatActivity {
 
         }
         hsvDetector = new HSVDetector();
+        ModelLoader modelLoader = new ModelLoader(getAssets());
+        deleteFile("hog.yml");
+        try {
+            modelLoader.saveModelToStorage(getFilesDir().getAbsolutePath());
+            FileInputStream in = openFileInput("hog.yml");
+            System.out.println("filesize: " + in.available());
+            in.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        for(String file : fileList()) {
+            System.out.println(file);
+        }
 
-        hogDetector = new HOGDetector(0.7, getResources().getAssets());
+        hogDetector = new HOGDetector(0.7, getFilesDir().getAbsolutePath());
         initCamera();
+        System.out.println("ready");
     }
 
     private void initCamera() {
@@ -145,7 +183,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
                 Mat frame = inputFrame.rgba();
-
                 if(!blocking && detect) {
                     blocking = true;
                     detectGrain(frame);
