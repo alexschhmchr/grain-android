@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
         HSV, HOG
     }
 
-    private ObjectDetector currentDetector = ObjectDetector.HOG;
+    private ObjectDetector currentDetector = ObjectDetector.HSV;
 
     float lowerB1 = 0;
     float higherB1 = 255;
