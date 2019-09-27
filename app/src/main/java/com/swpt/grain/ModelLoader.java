@@ -20,7 +20,7 @@ import java.nio.file.StandardCopyOption;
 public class ModelLoader {
     public static final String MODEL_FOLDER_NAME = "models";
 
-    private static final String HOG_MODEL = "hog.yml";
+    public static final String HOG_MODEL = "hog.yml";
     private static final String[] MODELS = {HOG_MODEL};
 
     private AssetManager assetManager;
@@ -37,10 +37,10 @@ public class ModelLoader {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
-    public void saveModelToStorage(String fileDir) throws IOException {
-        InputStream inputStream = assetManager.open(HOG_MODEL);
+    public void saveModelToStorage(String modelName, String fileDir) throws IOException {
+        InputStream inputStream = assetManager.open(modelName);
         System.out.println(inputStream.available());
-        Path path = Paths.get(fileDir, HOG_MODEL);
+        Path path = Paths.get(fileDir, modelName);
         System.out.println(path);
         Files.copy(inputStream, path, StandardCopyOption.REPLACE_EXISTING);
 
