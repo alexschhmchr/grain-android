@@ -36,16 +36,17 @@ public class MainActivity extends AppCompatActivity {
     private TextView objsTextView;
     private HSVDetector hsvDetector;
     private HOGDetector hogDetector;
+    private BOWDetector bowDetector;
     private boolean threshold = false;
     private boolean detect = false;
     private boolean blocking = false;
     private Handler handler = Handler.createAsync(Looper.getMainLooper());
 
     private enum ObjectDetector {
-        HSV, HOG
+        HSV, HOG, BOW
     }
 
-    private ObjectDetector currentDetector = ObjectDetector.HSV;
+    private ObjectDetector currentDetector = ObjectDetector.BOW;
 
     float lowerB1 = 0;
     float higherB1 = 255;
@@ -150,24 +151,28 @@ public class MainActivity extends AppCompatActivity {
         } else {
 
         }
+
+        initModels();
         hsvDetector = new HSVDetector();
+        hogDetector = new HOGDetector(0.7, getFilesDir().getAbsolutePath());
+        bowDetector = new BOWDetector(null, getFilesDir().getAbsolutePath() + "/matcher.yml", null);
+        initCamera();
+        System.out.println("ready");
+    }
+
+    private void initModels() {
         ModelLoader modelLoader = new ModelLoader(getAssets());
         deleteFile("hog.yml");
+        deleteFile("matcher.yml");
         try {
-            modelLoader.saveModelToStorage(getFilesDir().getAbsolutePath());
-            FileInputStream in = openFileInput("hog.yml");
-            System.out.println("filesize: " + in.available());
-            in.close();
+            modelLoader.saveModelToStorage("hog.yml", getFilesDir().getAbsolutePath());
+            modelLoader.saveModelToStorage("matcher.yml", getFilesDir().getAbsolutePath());
         } catch (IOException e) {
             e.printStackTrace();
         }
         for(String file : fileList()) {
             System.out.println(file);
         }
-
-        hogDetector = new HOGDetector(0.7, getFilesDir().getAbsolutePath());
-        initCamera();
-        System.out.println("ready");
     }
 
     private void initCamera() {
@@ -207,6 +212,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case HOG:
                 objects = hogDetector.detectObject(frame);
+                break;
+            case BOW:
                 break;
         }
         int n = objects;

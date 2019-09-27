@@ -8,6 +8,7 @@ import org.opencv.core.MatOfFloat;
 import org.opencv.core.MatOfInt;
 import org.opencv.core.Rect;
 import org.opencv.features2d.AKAZE;
+import org.opencv.features2d.BFMatcher;
 import org.opencv.features2d.Feature2D;
 import org.opencv.features2d.FlannBasedMatcher;
 import org.opencv.ml.SVM;
@@ -17,7 +18,7 @@ public class BOWDetector implements Detector{
     private static final float PREDICTION_THRESHOLD = 0.8f;
 
     private Feature2D ftExtractor;
-    private FlannBasedMatcher matcher;
+    private BFMatcher matcher;
     private SVM classifier;
     private Mat des = new Mat();
     private MatOfDMatch matches = new MatOfDMatch();
@@ -25,11 +26,10 @@ public class BOWDetector implements Detector{
 
     public BOWDetector(String ftFilePath, String matcherFilePath, String svmFilePath) {
         ftExtractor = AKAZE.create();
-        ftExtractor.read(ftFilePath);
-        matcher = FlannBasedMatcher.create();
-        matcher.read(matcherFilePath);
+        matcher = BFMatcher.load(matcherFilePath);
+        System.out.println("Train descriptors: " + matcher.getTrainDescriptors().size());
         clusters = matcher.getTrainDescriptors().get(0).height();
-        classifier = SVM.load(svmFilePath);
+        //classifier = SVM.load(svmFilePath);
     }
 
     public void detectInWindow(Rect window, Mat img) {
