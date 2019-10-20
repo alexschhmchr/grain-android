@@ -15,8 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.jaygoo.widget.RangeSeekBar
         android:id="@+id/seekBar"
@@ -24,6 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="60dp"
         android:layout_marginBottom="8dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/seekBar2"
         app:layout_constraintEnd_toEndOf="parent"
         app:rsb_max="255"
@@ -37,6 +37,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="60dp"
         android:layout_marginBottom="12dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toTopOf="@+id/seekBar3"
         app:layout_constraintEnd_toEndOf="parent"
         app:rsb_max="255"
@@ -50,6 +51,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="60dp"
         android:layout_marginBottom="16dp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:rsb_max="255"
@@ -62,21 +64,23 @@
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginStart="8dp"
         android:text="Threshold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/detectButton"
+        app:layout_constraintTop_toTopOf="@+id/detectButton" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/detectButton"
         style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="16dp"
         android:text="Detect"
-        app:layout_constraintStart_toEndOf="@+id/rangeButton"
-        app:layout_constraintTop_toTopOf="@+id/rangeButton" />
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
         android:id="@+id/lb1TextView"
@@ -88,6 +92,7 @@
         android:shadowDy="1"
         android:shadowRadius="1"
         android:text="0.0"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/seekBar"
         app:layout_constraintEnd_toStartOf="@+id/seekBar"
         app:layout_constraintTop_toTopOf="@+id/seekBar" />
@@ -102,6 +107,7 @@
         android:shadowDy="1"
         android:shadowRadius="1"
         android:text="255.0"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/seekBar"
         app:layout_constraintStart_toEndOf="@+id/seekBar"
         app:layout_constraintTop_toTopOf="@+id/seekBar" />
@@ -116,6 +122,7 @@
         android:shadowDy="1"
         android:shadowRadius="1"
         android:text="0.0"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/seekBar2"
         app:layout_constraintEnd_toStartOf="@+id/seekBar2"
         app:layout_constraintTop_toTopOf="@+id/seekBar2" />
@@ -131,6 +138,7 @@
         android:shadowDy="1"
         android:shadowRadius="1"
         android:text="255.0"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/seekBar2"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/seekBar2"
@@ -146,6 +154,7 @@
         android:shadowDy="1"
         android:shadowRadius="1"
         android:text="0.0"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/seekBar3"
         app:layout_constraintEnd_toStartOf="@+id/seekBar3"
         app:layout_constraintTop_toTopOf="@+id/seekBar3" />
@@ -161,6 +170,7 @@
         android:shadowDy="1"
         android:shadowRadius="1"
         android:text="255.0"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="@+id/seekBar3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/seekBar3"
@@ -187,25 +197,35 @@
         app:layout_constraintStart_toEndOf="@+id/objTextView"
         app:layout_constraintTop_toTopOf="@+id/objTextView" />
 
-    <SeekBar
-        android:id="@+id/weightSeekBar"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="24dp"
-        android:max="50"
-        android:progress="25"
-        app:layout_constraintBottom_toTopOf="@+id/rangeButton"
-        app:layout_constraintEnd_toStartOf="@+id/weightTextView"
-        app:layout_constraintStart_toStartOf="@+id/rangeButton" />
-
-    <TextView
-        android:id="@+id/weightTextView"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/dbscanButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="0.0"
-        app:layout_constraintBottom_toBottomOf="@+id/weightSeekBar"
-        app:layout_constraintEnd_toEndOf="@+id/detectButton"
-        app:layout_constraintTop_toTopOf="@+id/weightSeekBar" />
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="DBScan"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/hogButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="HoG"
+        app:layout_constraintEnd_toStartOf="@+id/dbscanButton"
+        app:layout_constraintTop_toTopOf="@+id/dbscanButton" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bowButton"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="BoW"
+        app:layout_constraintEnd_toStartOf="@+id/hogButton"
+        app:layout_constraintTop_toTopOf="@+id/hogButton" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

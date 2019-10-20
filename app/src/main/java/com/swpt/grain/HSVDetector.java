@@ -12,16 +12,11 @@ import java.util.ArrayList;
 
 public class HSVDetector {
     private static final int MAX_POINTS = 7000;
-
-    private boolean showInRangePoints = false;
     private Scalar lowerBound = new Scalar(0, 0, 0);
     private Scalar upperBound = new Scalar(255, 255, 255);
-    //private Mat hsvImg = new Mat();
-    //private Mat threshImg = new Mat();
-    //private Mat nonZero = new Mat();
-    private Mat tempMat = new Mat();
+    private Mat tempMat = null;
     private Mat pyrMat = new Mat(360, 640, CvType.CV_8U);
-    private DBScan dbScanner = new DBScan(3, 150);
+    private DBScan dbScanner = new DBScan(3, 50);
 
 
     public void setBound1(float lowerB, float higherB) {
@@ -49,6 +44,9 @@ public class HSVDetector {
 
 
     public ArrayList<Point> getInRangePoints(Mat img, boolean showThreshImg) {
+        if(tempMat == null) {
+            tempMat = new Mat(img.size(), img.type());
+        }
         Mat targetMat;
         if(showThreshImg) {
             targetMat = img;
@@ -57,7 +55,9 @@ public class HSVDetector {
         }
         Imgproc.cvtColor(img, targetMat, Imgproc.COLOR_RGB2HSV);
         Core.inRange(targetMat, lowerBound, upperBound, targetMat);
-        Imgproc.pyrDown(img, pyrMat);
+        Imgproc.pyrDown(targetMat, pyrMat);
+        Imgproc.pyrDown(pyrMat, pyrMat);
+        Imgproc.pyrDown(pyrMat, pyrMat);
         Core.findNonZero(pyrMat, pyrMat);
         int[] data = new int[(int) pyrMat.total() * pyrMat.channels()];
         System.out.println(pyrMat.height());
@@ -77,19 +77,19 @@ public class HSVDetector {
 
     public int detectObject(Mat img, boolean showThreshImg) {
         ArrayList<Point> inRangePointList = getInRangePoints(img, showThreshImg);
-        if(inRangePointList.size() < MAX_POINTS) {
+        if(inRangePointList.size() < MAX_POINTS && !showThreshImg) {
             ArrayList<DBScan.Cluster> clusters = dbScanner.findClustersNR(inRangePointList);
             for(DBScan.Cluster cluster : clusters) {
                 Rect rect = cluster.getClusterRect();
-                rect.width *= 2;
-                rect.height *= 2;
-                rect.x *= 2;
-                rect.y *= 2;
+                rect.width *= 8;
+                rect.height *= 8;
+                rect.x *= 8;
+                rect.y *= 8;
                 Imgproc.rectangle(img, cluster.getClusterRect(), new Scalar(255), 2);
             }
             return clusters.size();
         } else {
-            return -1;
+            return inRangePointList.size();
         }
 
     }

@@ -1,11 +1,6 @@
 package com.swpt.grain;
 
 import org.opencv.core.*;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-
-import java.lang.reflect.Array;
-import java.security.SecureClassLoader;
 import java.util.ArrayList;
 
 public class DBScan {

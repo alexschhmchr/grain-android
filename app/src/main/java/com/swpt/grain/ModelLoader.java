@@ -5,13 +5,8 @@ import android.os.Build;
 
 import androidx.annotation.RequiresApi;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -29,12 +24,6 @@ public class ModelLoader {
         this.assetManager = assetManager;
     }
 
-    public boolean isModelOnStorageUpdated() {
-        for(String model : MODELS) {
-
-        }
-        return false;
-    }
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     public void saveModelToStorage(String modelName, String fileDir) throws IOException {
